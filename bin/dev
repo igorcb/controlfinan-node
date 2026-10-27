@@ -1,0 +1,8 @@
+#!/bin/sh
+# Development: install packages, build the CSS, compile TypeScript and run the app
+# (restart the container after code changes).
+set -e
+npm install --no-audit --no-fund
+tailwindcss -i assets/app.tailwind.css -o static/css/app.css
+npx tsc -p .
+exec node dist/src/main.js

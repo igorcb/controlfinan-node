@@ -1,0 +1,27 @@
+{
+  "name": "controlfinan-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ControlFinan in Node.js (TypeScript + Fastify)",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "dist/src/main.js",
+  "scripts": {
+    "build": "tsc -p .",
+    "css": "tailwindcss -i assets/app.tailwind.css -o static/css/app.css",
+    "start": "node dist/src/main.js",
+    "test": "tsc -p . && node --test --test-concurrency=1 \"dist/test/**/*.test.js\""
+  },
+  "dependencies": {
+    "@fastify/formbody": "^8.0.2",
+    "@fastify/static": "^8.3.0",
+    "bcryptjs": "^3.0.3",
+    "fastify": "^5.6.0",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/pg": "^8.23.1",
+    "typescript": "^5.9.3"
+  }
+}

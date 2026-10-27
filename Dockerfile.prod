@@ -1,0 +1,31 @@
+# Production image: compiled JavaScript, the built CSS and production packages only, on node:22-slim.
+FROM python:3.12-slim AS css
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+    && curl -fsSL --retry 6 --retry-all-errors --retry-delay 5 -o /usr/local/bin/tailwindcss \
+       https://github.com/tailwindlabs/tailwindcss/releases/download/v4.3.3/tailwindcss-linux-x64 \
+    && chmod +x /usr/local/bin/tailwindcss
+WORKDIR /src
+COPY assets ./assets
+COPY src ./src
+RUN tailwindcss -i assets/app.tailwind.css -o static/css/app.css --minify
+
+FROM node:22-slim AS build
+WORKDIR /src
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY tsconfig.json ./
+COPY src ./src
+COPY test ./test
+RUN npx tsc -p . && npm prune --omit=dev
+
+FROM node:22-slim
+ENV NODE_ENV=production WEB_CONCURRENCY=2
+WORKDIR /app
+COPY --from=build /src/node_modules ./node_modules
+COPY --from=build /src/dist/src ./dist/src
+COPY src/schema.sql ./src/schema.sql
+COPY static ./static
+COPY --from=css /src/static/css/app.css ./static/css/app.css
+USER node
+EXPOSE 8000
+CMD ["node", "dist/src/main.js"]
