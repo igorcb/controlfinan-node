@@ -48,7 +48,24 @@ function hasOption(options: Option[], id: number): boolean {
 }
 
 export function createPool(connectionString: string, max: number): Pool {
-  return new Pool({ connectionString, max });
+  const pool = new Pool({ connectionString, max });
+  // Like pgx (Go), SQLx (Rust) and Postgrex (Elixir): queries with parameters become named prepared
+  // statements, so Postgres parses and plans each SQL once per connection instead of on every request.
+  const query = pool.query.bind(pool) as (...args: unknown[]) => unknown;
+  (pool as unknown as { query: unknown }).query = (text: unknown, values?: unknown) =>
+    typeof text === "string" && Array.isArray(values) ? query({ name: statementName(text), text, values }) : query(text, values);
+  return pool;
+}
+
+const statementNames = new Map<string, string>();
+
+function statementName(text: string): string {
+  let name = statementNames.get(text);
+  if (!name) {
+    name = `q${statementNames.size + 1}`;
+    statementNames.set(text, name);
+  }
+  return name;
 }
 
 // migrate creates the tables (same schema as the Rails app) when they do not exist.

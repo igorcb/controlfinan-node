@@ -10,7 +10,7 @@ Aplicação web de controle financeiro pessoal, pensada para quem trabalha como 
 
 Esta é a versão em **Node.js (TypeScript + Fastify)** do [ControlFinan em Rails 8 + Hotwire](https://github.com/igorcb/controlfinan-rails8-hotwire). Ela tem **paridade de funcionalidades e de visual** com o original, assim como as versões em Django, Laravel, Go, Java, Rust e C#: mesmas telas, mesmas regras, mesmas mensagens e **mesmo esquema de banco**. As versões podem usar os mesmos dados, inclusive as senhas.
 
-Usa [Fastify](https://fastify.dev) (com `@fastify/formbody` e `@fastify/static`), o driver [pg](https://node-postgres.com) e o [bcryptjs](https://github.com/dcodeIO/bcrypt.js). O HTML é gerado com template strings do TypeScript e uma função de escape.
+Usa [Fastify](https://fastify.dev) (com `@fastify/formbody` e `@fastify/static`), o driver [pg](https://node-postgres.com) e o [bcryptjs](https://github.com/dcodeIO/bcrypt.js). O HTML é gerado com template strings do TypeScript e uma função de escape. As consultas com parâmetros viram consultas preparadas com nome (como no pgx do Go e no Postgrex do Elixir), para o Postgres não analisar o mesmo SQL a cada requisição.
 
 ## Funcionalidades
 
